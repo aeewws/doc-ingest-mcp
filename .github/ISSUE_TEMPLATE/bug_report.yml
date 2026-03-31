@@ -1,0 +1,20 @@
+name: Bug report
+description: Report a reproducible bug in doc-ingest-mcp
+title: "[bug] "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Include the input type, command or MCP tool call, and the observed result.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Share steps, sample files, or logs.
+    validations:
+      required: true
