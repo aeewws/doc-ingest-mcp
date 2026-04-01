@@ -12,13 +12,15 @@ requires-python = ">=3.10"
 authors = [{ name = "aeewws" }]
 dependencies = [
   "pydantic>=2.11.0",
+  "pypdf>=5.4.0",
+  "python-docx>=1.1.2",
   "typer>=0.16.0",
 ]
 
 [project.optional-dependencies]
 docling = ["docling>=2.83.0"]
 mcp = ["mcp>=1.10.0"]
-dev = ["pytest>=8.3.5"]
+dev = ["pytest>=8.3.5", "Pillow>=11.2.0", "reportlab>=4.4.0"]
 
 [project.scripts]
 doc-ingest = "doc_ingest_mcp.cli:main"
@@ -29,4 +31,3 @@ addopts = "-q"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/doc_ingest_mcp"]
-

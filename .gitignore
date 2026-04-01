@@ -8,3 +8,4 @@ build/
 *.pyd
 .DS_Store
 doc-ingest-output/
+/examples/

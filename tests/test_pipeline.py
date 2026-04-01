@@ -25,6 +25,9 @@ def test_ingest_writes_expected_contract(tmp_path: Path, fixture_dir: Path) -> N
     assert manifest["source"].endswith("sample.pdf")
     assert manifest["status"] == "ok"
     assert manifest["chunk_count"] >= 1
+    assert manifest["table_count"] == 1
+    assert "Alpha paragraph." in markdown_path.read_text(encoding="utf-8")
+    assert "Beta paragraph." in (tables_dir / "table-001.md").read_text(encoding="utf-8")
 
 
 def test_batch_ingest_processes_three_sample_documents(tmp_path: Path, fixture_dir: Path) -> None:
@@ -44,6 +47,7 @@ def test_export_reads_generated_output(tmp_path: Path, fixture_dir: Path) -> Non
     data = json.loads(payload)
     assert data["manifest"]["status"] == "ok"
     assert data["chunks"]
+    assert "Clause one." in Path(result.paths.markdown_path).read_text(encoding="utf-8")
 
 
 def test_tool_registry_names_are_stable() -> None:
@@ -55,4 +59,3 @@ def test_tool_registry_names_are_stable() -> None:
         "read_chunks",
         "export_markdown",
     ]
-

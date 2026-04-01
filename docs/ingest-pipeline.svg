@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-label="doc-ingest-mcp pipeline diagram">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbf7f0"/>
+      <stop offset="100%" stop-color="#eef4ff"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fbff"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#3f5f7b"/>
+    </marker>
+    <style>
+      .title { font: 700 26px/1.2 Arial, sans-serif; fill: #18324a; }
+      .subtitle { font: 400 14px/1.4 Arial, sans-serif; fill: #516273; }
+      .card-title { font: 700 18px/1.2 Arial, sans-serif; fill: #18324a; }
+      .card-body { font: 400 14px/1.5 Arial, sans-serif; fill: #3a4a58; }
+      .chip { font: 700 12px/1 Arial, sans-serif; fill: #2c4257; }
+      .panel { fill: url(#card); stroke: #cad6e2; stroke-width: 1.4; rx: 20; }
+      .core { fill: #1f7a8c; }
+      .accent { fill: #f4b942; }
+      .arrow { stroke: #3f5f7b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .rule { stroke: #dbe4ed; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="420" fill="url(#bg)"/>
+  <text x="56" y="52" class="title">doc-ingest-mcp turns mixed documents into a stable agent-ready bundle</text>
+  <text x="56" y="78" class="subtitle">The same pipeline powers CLI, batch jobs, watch mode, and MCP tools.</text>
+
+  <rect x="56" y="132" width="190" height="180" class="panel"/>
+  <circle cx="86" cy="166" r="10" class="core"/>
+  <text x="108" y="171" class="card-title">Inputs</text>
+  <text x="82" y="208" class="card-body">PDF</text>
+  <text x="82" y="234" class="card-body">DOCX</text>
+  <text x="82" y="260" class="card-body">PNG / JPG</text>
+  <text x="82" y="286" class="card-body">Inbox folders</text>
+
+  <path d="M250 222 L310 222" class="arrow"/>
+
+  <rect x="320" y="120" width="260" height="204" class="panel"/>
+  <circle cx="352" cy="154" r="10" class="accent"/>
+  <text x="374" y="159" class="card-title">Backend selection</text>
+  <text x="346" y="196" class="card-body">`fake`</text>
+  <text x="430" y="196" class="chip">deterministic smoke mode</text>
+  <text x="346" y="228" class="card-body">`auto` / `docling`</text>
+  <text x="430" y="228" class="chip">real parser path</text>
+  <line x1="344" y1="246" x2="552" y2="246" class="rule"/>
+  <text x="346" y="274" class="card-body">Extract markdown, chunks, tables,</text>
+  <text x="346" y="298" class="card-body">assets, and manifest metadata.</text>
+
+  <path d="M590 222 L650 222" class="arrow"/>
+
+  <rect x="660" y="104" width="236" height="236" class="panel"/>
+  <circle cx="692" cy="138" r="10" class="core"/>
+  <text x="714" y="143" class="card-title">Output bundle</text>
+  <text x="684" y="182" class="card-body">manifest.json</text>
+  <text x="684" y="210" class="card-body">document.md</text>
+  <text x="684" y="238" class="card-body">chunks.jsonl</text>
+  <text x="684" y="266" class="card-body">assets/</text>
+  <text x="684" y="294" class="card-body">tables/</text>
+
+  <path d="M920 222 L980 222" class="arrow"/>
+
+  <rect x="990" y="120" width="154" height="204" class="panel"/>
+  <circle cx="1020" cy="154" r="10" class="accent"/>
+  <text x="1042" y="159" class="card-title">Surfaces</text>
+  <text x="1012" y="196" class="card-body">CLI</text>
+  <text x="1012" y="224" class="card-body">MCP</text>
+  <text x="1012" y="252" class="card-body">batch</text>
+  <text x="1012" y="280" class="card-body">watch</text>
+</svg>

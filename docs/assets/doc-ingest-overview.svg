@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" fill="none">
+  <rect width="960" height="560" fill="#F8FAFC"/>
+  <rect x="36" y="36" width="888" height="488" rx="28" fill="#FFFFFF" stroke="#0F172A" stroke-width="3"/>
+  <text x="70" y="88" fill="#0F172A" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">doc-ingest-mcp output flow</text>
+  <text x="70" y="120" fill="#475569" font-family="Segoe UI, Arial, sans-serif" font-size="16">Stable output matters more than one specific parser backend.</text>
+
+  <rect x="72" y="166" width="220" height="132" rx="20" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+  <text x="102" y="208" fill="#1D4ED8" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Inputs</text>
+  <text x="102" y="238" fill="#1D4ED8" font-family="Segoe UI, Arial, sans-serif" font-size="16">PDF</text>
+  <text x="102" y="262" fill="#1D4ED8" font-family="Segoe UI, Arial, sans-serif" font-size="16">DOCX</text>
+  <text x="102" y="286" fill="#1D4ED8" font-family="Segoe UI, Arial, sans-serif" font-size="16">PNG / JPG</text>
+
+  <rect x="368" y="146" width="236" height="172" rx="20" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+  <text x="398" y="188" fill="#7C2D12" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Pipeline</text>
+  <text x="398" y="218" fill="#7C2D12" font-family="Segoe UI, Arial, sans-serif" font-size="16">backend=auto / fake / docling</text>
+  <text x="398" y="242" fill="#7C2D12" font-family="Segoe UI, Arial, sans-serif" font-size="16">normalize -> chunk -> manifest</text>
+  <text x="398" y="266" fill="#7C2D12" font-family="Segoe UI, Arial, sans-serif" font-size="16">keep going on batch failure</text>
+  <text x="398" y="290" fill="#7C2D12" font-family="Segoe UI, Arial, sans-serif" font-size="16">same contract for CLI and MCP</text>
+
+  <rect x="680" y="126" width="196" height="212" rx="20" fill="#DCFCE7" stroke="#15803D" stroke-width="2"/>
+  <text x="710" y="168" fill="#166534" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Bundle</text>
+  <text x="710" y="198" fill="#166534" font-family="Segoe UI, Arial, sans-serif" font-size="16">manifest.json</text>
+  <text x="710" y="222" fill="#166534" font-family="Segoe UI, Arial, sans-serif" font-size="16">document.md</text>
+  <text x="710" y="246" fill="#166534" font-family="Segoe UI, Arial, sans-serif" font-size="16">chunks.jsonl</text>
+  <text x="710" y="270" fill="#166534" font-family="Segoe UI, Arial, sans-serif" font-size="16">assets/</text>
+  <text x="710" y="294" fill="#166534" font-family="Segoe UI, Arial, sans-serif" font-size="16">tables/</text>
+
+  <rect x="152" y="372" width="652" height="96" rx="20" fill="#FCE7F3" stroke="#BE185D" stroke-width="2"/>
+  <text x="182" y="412" fill="#9D174D" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Core promise</text>
+  <text x="182" y="440" fill="#9D174D" font-family="Segoe UI, Arial, sans-serif" font-size="16">A downstream agent always reads the same file layout, whether parsing came from a fake backend, Docling, or a fallback path.</text>
+
+  <path d="M292 232H348" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M604 232H658" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="348" cy="232" r="6" fill="#0F172A"/>
+  <circle cx="658" cy="232" r="6" fill="#0F172A"/>
+</svg>

@@ -9,13 +9,72 @@ SUPPORTED_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".docx"}
 
 
 def _read_text_fallback(source: Path) -> str:
+    suffix = source.suffix.lower()
+    if suffix == ".pdf":
+        text = _extract_pdf_text(source)
+        if text:
+            return text
+    elif suffix == ".docx":
+        text = _extract_docx_text(source)
+        if text:
+            return text
+
     raw = source.read_bytes()
     text = raw.decode("utf-8", errors="ignore").strip()
     return text or source.stem
 
 
+def _extract_pdf_text(source: Path) -> str:
+    try:
+        from pypdf import PdfReader
+    except Exception:
+        return ""
+
+    try:
+        reader = PdfReader(str(source))
+    except Exception:
+        return ""
+
+    pages = [page.extract_text() or "" for page in reader.pages]
+    text = "\n\n".join(page.strip() for page in pages if page.strip()).strip()
+    return text
+
+
+def _extract_docx_text(source: Path) -> str:
+    try:
+        from docx import Document
+    except Exception:
+        return ""
+
+    try:
+        document = Document(str(source))
+    except Exception:
+        return ""
+
+    paragraphs = [paragraph.text.strip() for paragraph in document.paragraphs if paragraph.text.strip()]
+    text = "\n\n".join(paragraphs).strip()
+    if text:
+        return text
+
+    table_blocks: list[str] = []
+    for table in document.tables:
+        rows = []
+        for row in table.rows:
+            cells = [cell.text.strip().replace("|", r"\|") for cell in row.cells]
+            rows.append("| " + " | ".join(cells) + " |")
+        if rows:
+            header = rows[0]
+            separator = "| " + " | ".join(["---"] * header.count("|")) + " |"
+            table_blocks.append("\n".join([header, separator, *rows[1:]]))
+    return "\n\n".join(table_blocks).strip()
+
+
 def _fake_tables(text: str) -> list[str]:
     blocks = [block.strip() for block in text.split("\n\n") if block.strip()]
+    if len(blocks) <= 1:
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        if len(lines) > 1:
+            blocks = lines[:3]
     if len(blocks) > 1:
         header = "| section | text |\n| --- | --- |"
         rows = []
@@ -156,4 +215,3 @@ def extract_document(source: Path, backend: str = "auto") -> BackendDocument:
             asset_paths=[],
         )
     return _extract_docling_document(source)
-

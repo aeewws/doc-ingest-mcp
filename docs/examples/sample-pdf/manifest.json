@@ -1,0 +1,11 @@
+{
+  "source": "C:\\Users\\40436\\Desktop\\doc-ingest-mcp\\tests\\fixtures\\sample.pdf",
+  "mime_type": "application/pdf",
+  "page_count": 1,
+  "ocr_used": false,
+  "chunk_count": 3,
+  "table_count": 1,
+  "duration_ms": 184,
+  "status": "ok",
+  "error": null
+}

@@ -1,38 +1,39 @@
 # doc-ingest-mcp
 
-`doc-ingest-mcp` is a CLI and MCP server for turning documents into a stable
-output bundle:
+`doc-ingest-mcp` turns messy local documents into a stable bundle that agents can trust. The idea is simple: feed it a PDF, DOCX, or image, and get the same five artifacts every time, whether you call it from the CLI, batch mode, watch mode, or MCP.
 
-- `manifest.json`
-- `document.md`
-- `chunks.jsonl`
-- `assets/`
-- `tables/`
+## Why this exists
 
-The default install stays light. Install the optional extras when you want the
-full runtime:
+- Agents need predictable document inputs, not a different parser shape for every file type.
+- Teams need a clear split between a deterministic smoke path and a real parser path.
+- Batch workflows fail more gracefully when each file lands in its own output bundle.
 
-```bash
-pip install -e ".[dev]"
-pip install -e ".[docling,mcp]"
-```
+## Backend Modes
 
-## CLI
+| Mode | What it does | Best for |
+| --- | --- | --- |
+| `fake` | Uses lightweight local extraction for PDF/DOCX and deterministic fallback text for everything else. | Tests, demos, offline dev |
+| `auto` | Tries the real Docling pipeline. | Normal runs when `docling` is installed |
+| `docling` | Explicit real-parser mode. | Same as `auto`, but spelled out in automation |
 
-```bash
-doc-ingest ingest ./sample.pdf --out ./out/sample --backend fake
-doc-ingest batch ./incoming --out ./out --backend fake
-doc-ingest watch ./incoming --out ./out --backend fake --once
-doc-ingest export ./out/sample --format markdown
-doc-ingest serve-mcp
-```
+The `fake` backend is not a toy. It is the repo's stable smoke path, and it now extracts meaningful text from the bundled PDF and DOCX fixtures so the examples below stay readable.
 
-`--backend fake` is the stable smoke-test mode used in this repository. It keeps
-the tests deterministic even when Docling is not installed.
+## Pipeline
+
+![doc-ingest-mcp pipeline](docs/ingest-pipeline.svg)
+![doc-ingest-mcp bundle overview](docs/assets/doc-ingest-overview.svg)
+
+The same pipeline powers everything:
+
+- `ingest` for one file
+- `batch` for directories
+- `watch` for inboxes
+- `export` for downstream handoff
+- `serve-mcp` for agent access over stdio
 
 ## Output Contract
 
-Every successful ingest writes the same layout:
+Every ingest writes the same bundle:
 
 - `manifest.json`
 - `document.md`
@@ -40,7 +41,7 @@ Every successful ingest writes the same layout:
 - `assets/`
 - `tables/`
 
-`manifest.json` includes:
+`manifest.json` always carries:
 
 - `source`
 - `mime_type`
@@ -52,25 +53,108 @@ Every successful ingest writes the same layout:
 - `status`
 - `error`
 
-`chunks.jsonl` stores one JSON object per chunk with:
+## Real Examples
 
-- `id`
-- `page`
-- `section`
-- `text`
-- `tokens_est`
+The repository includes generated examples under [`docs/examples`](docs/examples/README.md).
 
-## Behavior
+PDF example:
 
-- `ingest` handles one file.
-- `batch` processes supported files in a directory and keeps going if one file fails.
-- `watch` polls an inbox and processes new files.
-- `export` reads an output bundle and prints markdown, chunks, or JSON.
-- `serve-mcp` exposes the same pipeline over MCP.
+```json
+{
+  "source": "C:\\Users\\40436\\Desktop\\doc-ingest-mcp\\tests\\fixtures\\sample.pdf",
+  "mime_type": "application/pdf",
+  "page_count": 1,
+  "ocr_used": false,
+  "chunk_count": 3,
+  "table_count": 1,
+  "duration_ms": 184,
+  "status": "ok",
+  "error": null
+}
+```
 
-## Dependency Hints
+```md
+Document title
 
-- If Docling is missing, use `--backend fake` for smoke tests or install
-  `pip install -e ".[docling]"`.
-- If MCP support is missing, install `pip install -e ".[mcp]"`.
+Alpha paragraph.
 
+Beta paragraph.
+```
+
+DOCX example:
+
+```md
+Contract header
+
+Clause one.
+
+Clause two.
+```
+
+The matching bundle files are checked in, so the examples are not just README prose:
+
+- [sample.pdf manifest](docs/examples/sample-pdf/manifest.json)
+- [sample.pdf markdown](docs/examples/sample-pdf/document.md)
+- [contract.docx manifest](docs/examples/contract-docx/manifest.json)
+- [contract.docx markdown](docs/examples/contract-docx/document.md)
+
+## CLI
+
+```bash
+doc-ingest ingest ./sample.pdf --out ./out/sample --backend fake
+doc-ingest batch ./incoming --out ./out --backend fake
+doc-ingest watch ./incoming --out ./out --backend fake --once
+doc-ingest export ./out/sample --format markdown
+doc-ingest serve-mcp
+```
+
+The important flags are:
+
+- `--out`: where the output bundle is written
+- `--backend`: `fake`, `auto`, or `docling`
+- `--format`: `markdown`, `chunks`, or `json`
+- `--once`: process the current inbox and exit
+
+## MCP Surface
+
+The MCP server exposes the same behavior over stdio:
+
+- `ingest_document`
+- `batch_ingest`
+- `get_manifest`
+- `read_chunks`
+- `export_markdown`
+
+Run it with:
+
+```bash
+doc-ingest serve-mcp
+```
+
+This command requires the `mcp` extra:
+
+```bash
+pip install -e ".[mcp]"
+```
+
+## Install
+
+```bash
+python -m venv .venv
+.venv\\Scripts\\activate
+pip install -e ".[dev]"
+```
+
+To enable the real parser path:
+
+```bash
+pip install -e ".[docling]"
+```
+
+## Tests
+
+```bash
+pytest
+```
+
+The fixture notes live in [`tests/fixtures/README.md`](tests/fixtures/README.md). The smoke corpus stays intentionally small so the repo is quick to clone, easy to read, and stable enough for regression tests.
