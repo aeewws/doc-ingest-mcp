@@ -61,7 +61,7 @@ PDF example:
 
 ```json
 {
-  "source": "C:\\Users\\40436\\Desktop\\doc-ingest-mcp\\tests\\fixtures\\sample.pdf",
+  "source": "tests/fixtures/sample.pdf",
   "mime_type": "application/pdf",
   "page_count": 1,
   "ocr_used": false,
