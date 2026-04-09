@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 import time
 from pathlib import Path
@@ -10,6 +11,7 @@ from .outputs import build_artifact, export_payload, write_artifact
 from .types import IngestResult
 
 SUPPORTED_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg", ".docx"}
+logger = logging.getLogger(__name__)
 
 
 def _default_backend() -> str:
@@ -72,10 +74,14 @@ def watch_inbox(
         for source in _iter_sources(source_dir, recursive=True):
             if source in processed:
                 continue
-            processed.add(source)
             relative = source.relative_to(source_dir)
             target_dir = (output_root / relative).with_suffix("") if output_root is not None else None
-            all_results.append(ingest_file(source, output_dir=target_dir, backend=backend))
+            try:
+                all_results.append(ingest_file(source, output_dir=target_dir, backend=backend))
+            except Exception:
+                logger.exception("Failed to ingest %s while watching %s", source, source_dir)
+                continue
+            processed.add(source)
 
     scan()
     if once:

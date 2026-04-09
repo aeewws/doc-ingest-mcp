@@ -3,8 +3,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from docx import Document
+
+from doc_ingest_mcp import pipeline
+from doc_ingest_mcp.backend import _extract_docx_text
 from doc_ingest_mcp.mcp_server import build_tool_registry
 from doc_ingest_mcp.pipeline import batch_ingest, export_directory, ingest_file
+from doc_ingest_mcp.types import ChunkRecord, DocumentArtifact, IngestPaths, IngestResult, Manifest
 
 
 def test_ingest_writes_expected_contract(tmp_path: Path, fixture_dir: Path) -> None:
@@ -59,3 +64,61 @@ def test_tool_registry_names_are_stable() -> None:
         "read_chunks",
         "export_markdown",
     ]
+
+
+def test_extract_docx_text_keeps_paragraphs_and_tables(tmp_path: Path) -> None:
+    source = tmp_path / "mixed.docx"
+    document = Document()
+    document.add_paragraph("Intro paragraph.")
+    table = document.add_table(rows=2, cols=2)
+    table.rows[0].cells[0].text = "Column A"
+    table.rows[0].cells[1].text = "Column B"
+    table.rows[1].cells[0].text = "Value 1"
+    table.rows[1].cells[1].text = "Value 2"
+    document.save(source)
+
+    text = _extract_docx_text(source)
+
+    assert "Intro paragraph." in text
+    assert "| Column A | Column B |" in text
+    assert "| --- | --- |" in text
+    assert "| Value 1 | Value 2 |" in text
+
+
+def test_watch_inbox_skips_failures_and_continues_processing(tmp_path: Path, monkeypatch) -> None:
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    bad_source = inbox / "bad.pdf"
+    good_source = inbox / "good.pdf"
+    bad_source.write_text("bad", encoding="utf-8")
+    good_source.write_text("good", encoding="utf-8")
+
+    def fake_ingest_file(source: Path, output_dir: Path | None = None, backend: str | None = None) -> IngestResult:
+        if source.name == "bad.pdf":
+            raise RuntimeError("boom")
+        return IngestResult(
+            artifact=DocumentArtifact(
+                manifest=Manifest(
+                    source=str(source),
+                    mime_type="application/pdf",
+                    status="ok"
+                ),
+                markdown="ok",
+                chunks=[ChunkRecord(id="chunk-1", text="ok")]
+            ),
+            paths=IngestPaths(
+                output_dir=str(output_dir or source.parent / "out" / source.stem),
+                manifest_path="manifest.json",
+                markdown_path="document.md",
+                chunks_path="chunks.json",
+                assets_dir="assets",
+                tables_dir="tables"
+            )
+        )
+
+    monkeypatch.setattr(pipeline, "ingest_file", fake_ingest_file)
+
+    results = pipeline.watch_inbox(inbox, output_root=tmp_path / "out", backend="fake", once=True)
+
+    assert len(results) == 1
+    assert results[0].artifact.manifest.source.endswith("good.pdf")
