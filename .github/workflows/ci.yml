@@ -19,6 +19,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install --upgrade pip
-      - run: pip install -e .[dev]
+      - run: pip install -e .[dev,mcp]
       - run: doc-ingest --help
+      - run: python tests/mcp_smoke.py
       - run: pytest
