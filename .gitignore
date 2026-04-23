@@ -9,3 +9,15 @@ build/
 .DS_Store
 doc-ingest-output/
 /examples/
+
+# OS / local files
+Thumbs.db
+.env
+.env.*
+*.log
+tmp/
+temp/
+*.py[cod]
+venv/
+.ruff_cache/
+*.egg-info/
