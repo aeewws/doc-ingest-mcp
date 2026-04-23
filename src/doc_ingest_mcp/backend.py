@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from itertools import chain
 
 from .errors import MissingDependencyError, UnsupportedInputError
 from .types import BackendDocument
@@ -52,10 +53,6 @@ def _extract_docx_text(source: Path) -> str:
         return ""
 
     paragraphs = [paragraph.text.strip() for paragraph in document.paragraphs if paragraph.text.strip()]
-    text = "\n\n".join(paragraphs).strip()
-    if text:
-        return text
-
     table_blocks: list[str] = []
     for table in document.tables:
         rows = []
@@ -63,10 +60,12 @@ def _extract_docx_text(source: Path) -> str:
             cells = [cell.text.strip().replace("|", r"\|") for cell in row.cells]
             rows.append("| " + " | ".join(cells) + " |")
         if rows:
+            column_count = len(table.rows[0].cells)
             header = rows[0]
-            separator = "| " + " | ".join(["---"] * header.count("|")) + " |"
+            separator = "| " + " | ".join(["---"] * column_count) + " |"
             table_blocks.append("\n".join([header, separator, *rows[1:]]))
-    return "\n\n".join(table_blocks).strip()
+    blocks = list(chain(paragraphs, table_blocks))
+    return "\n\n".join(blocks).strip()
 
 
 def _fake_tables(text: str) -> list[str]:
